@@ -27,12 +27,11 @@ def execute(filters=None):
 
     # Define columns for the report
     columns = [
-        {'fieldname': 'weekday', 'label': '', 'width': 150},
-        {'fieldname': 'log_date', 'label': 'Datum', 'width': 150},
+        {'fieldname': 'log_date', 'label': 'Datum', 'width': 300},
         {'fieldname': 'name', 'label': 'Werktag (Link)', "fieldtype": "Link", "options": "Workday", 'width': 150},
         {'fieldname': 'total_work_seconds', 'label': 'Ist-Stunden', "width": 150},
         {'fieldname': 'total_target_seconds', 'label': 'Soll-Stunden', 'width': 150},
-        {'fieldname': 'hours_absent', 'label': 'Abwesend', 'width': 150},
+        {'fieldname': 'absent_seconds', 'label': 'Abwesend', 'width': 150},
         {'fieldname': 'actual_diff_log', 'label': 'Differenz', 'width': 150},
     ]
 
@@ -42,10 +41,10 @@ def execute(filters=None):
         SELECT name, log_date, employee, attendance, status, total_work_seconds, total_break_seconds, hours_absent,
                actual_working_hours * 60 * 60 actual_working_seconds,
                expected_break_hours * 60 * 60 expected_break_seconds,
+               hours_absent * 60 * 60 absent_seconds,
                target_hours, total_target_seconds, (total_work_seconds - total_target_seconds) AS diff_log,
                (actual_working_hours * 60 * 60 + hours_absent * 60 * 60 - total_target_seconds) AS actual_diff_log,
-               TIME(first_checkin) AS first_in, TIME(last_checkout) AS last_out,
-               DAYNAME(log_date) AS weekday
+               TIME(first_checkin) AS first_in, TIME(last_checkout) AS last_out
         FROM `tabWorkday`
         WHERE docstatus < 2 {0} {1}
         ORDER BY log_date ASC

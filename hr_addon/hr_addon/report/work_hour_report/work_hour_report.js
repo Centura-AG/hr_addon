@@ -48,9 +48,15 @@ frappe.query_reports["Work Hour Report"] = {
         if (column.fieldname == "log_date") {
             if (value != 'Total') {
                 value = frappe.datetime.str_to_user(value);
+            
+                let weekday = new Date(value).toLocaleString('en-US', { weekday: 'long' });
+
+                weekday = __(weekday);
+
+                value = `${weekday}, ${value}`;
             } else {
-				value = parseInt((frappe.datetime.get_today()).split("-")[0]);
-			}
+                value = parseInt((frappe.datetime.get_today()).split("-")[0]);
+            }
         }
 
         // Special handling for diff_log and actual_diff_log with calDiff=true
@@ -59,7 +65,7 @@ frappe.query_reports["Work Hour Report"] = {
         }
 
         // Other specific fields that just need the hitt function without color
-        if (column.fieldname == "total_target_seconds" || column.fieldname == "expected_break_hours" || column.fieldname == "hours_absent") {
+        if (column.fieldname == "total_target_seconds" || column.fieldname == "expected_break_hours" || column.fieldname == "absent_seconds") {
             value = hitt(value);
         }
 
