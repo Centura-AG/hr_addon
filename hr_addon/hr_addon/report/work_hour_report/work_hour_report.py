@@ -38,7 +38,7 @@ def execute(filters=None):
     # Fetch data based on conditions
     work_data = frappe.db.sql(
         """
-        SELECT name, log_date, employee, attendance, status, total_work_seconds, total_break_seconds, hours_absent 
+        SELECT name, log_date, employee, attendance, status, total_work_seconds, total_break_seconds, hours_absent,
                actual_working_hours * 60 * 60 actual_working_seconds,
                expected_break_hours * 60 * 60 expected_break_seconds,
                target_hours, total_target_seconds, (total_work_seconds - total_target_seconds) AS diff_log,
