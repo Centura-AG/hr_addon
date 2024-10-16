@@ -47,12 +47,10 @@ frappe.query_reports["Work Hour Report"] = {
         // Format Date with date_format defined in system-settings
         if (column.fieldname == "log_date") {
             if (value != 'Total') {
-                value = frappe.datetime.str_to_user(value);
-            
                 let weekday = new Date(value).toLocaleString('en-US', { weekday: 'long' });
-
                 weekday = __(weekday);
 
+                value = frappe.datetime.str_to_user(value);
                 value = `${weekday}, ${value}`;
             } else {
                 value = parseInt((frappe.datetime.get_today()).split("-")[0]);

@@ -30,8 +30,8 @@ def execute(filters=None):
         {'fieldname': 'log_date', 'label': 'Datum', 'width': 300},
         {'fieldname': 'name', 'label': 'Werktag (Link)', "fieldtype": "Link", "options": "Workday", 'width': 150},
         {'fieldname': 'total_work_seconds', 'label': 'Ist-Stunden', "width": 150},
-        {'fieldname': 'total_target_seconds', 'label': 'Soll-Stunden', 'width': 150},
         {'fieldname': 'absent_seconds', 'label': 'Abwesend', 'width': 150},
+        {'fieldname': 'total_target_seconds', 'label': 'Soll-Stunden', 'width': 150},
         {'fieldname': 'actual_diff_log', 'label': 'Differenz', 'width': 150},
     ]
 
