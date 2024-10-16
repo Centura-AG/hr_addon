@@ -59,7 +59,7 @@ frappe.query_reports["Work Hour Report"] = {
         }
 
         // Other specific fields that just need the hitt function without color
-        if (column.fieldname == "total_target_seconds" || column.fieldname == "expected_break_hours") {
+        if (column.fieldname == "total_target_seconds" || column.fieldname == "expected_break_hours" || column.fieldname == "hours_absent") {
             value = hitt(value);
         }
 

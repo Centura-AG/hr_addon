@@ -27,6 +27,7 @@ def execute(filters=None):
 
     # Define columns for the report
     columns = [
+        {'fieldname': 'weekday', 'label': '', 'width': 150},
         {'fieldname': 'log_date', 'label': 'Datum', 'width': 150},
         {'fieldname': 'name', 'label': 'Werktag (Link)', "fieldtype": "Link", "options": "Workday", 'width': 150},
         {'fieldname': 'total_work_seconds', 'label': 'Ist-Stunden', "width": 150},
@@ -43,7 +44,8 @@ def execute(filters=None):
                expected_break_hours * 60 * 60 expected_break_seconds,
                target_hours, total_target_seconds, (total_work_seconds - total_target_seconds) AS diff_log,
                (actual_working_hours * 60 * 60 + hours_absent * 60 * 60 - total_target_seconds) AS actual_diff_log,
-               TIME(first_checkin) AS first_in, TIME(last_checkout) AS last_out
+               TIME(first_checkin) AS first_in, TIME(last_checkout) AS last_out,
+               DAYNAME(log_date) AS weekday
         FROM `tabWorkday`
         WHERE docstatus < 2 {0} {1}
         ORDER BY log_date ASC
