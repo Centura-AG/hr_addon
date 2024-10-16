@@ -44,44 +44,60 @@ def bulk_process_workdays(data):
     for date in data.unmarked_days:
         try:
             timesheets = get_timesheets_for_employee_on_date(data.employee, get_datetime(date))
+            absences = get_absences_for_employee_on_date(data.employee, get_datetime(date))
+
+            # Get total hours worked from Time Logs
+            total_hours_worked = 0
+            for timesheet in timesheets:
+                total_hours_worked += get_hours_from_timelogs_of_timesheet_on_date(timesheet.name, get_datetime(date))
+
+            # Get target hours from Weekly Working Hours
+            target_hours = get_target_hours(data.employee, get_datetime(date))
+
+            # Calculate total hours absent
+            total_hours_absent = 0
+            for absence in absences:
+                if absence.status == 'On Leave':
+                    total_hours_absent += target_hours
+                    break
+                elif absence.status == 'Half Day':
+                    total_hours_absent += target_hours / 2
+                    break
             
-            if timesheets:
-
-                # Get total hours worked from Time Logs
-                total_hours_worked = 0
-                for timesheet in timesheets:
-                    total_hours_worked += get_hours_from_timelogs_of_timesheet_on_date(timesheet.name, get_datetime(date))
-
-                # Get target hours from Weekly Working Hours
-                target_hours = get_target_hours(data.employee, get_datetime(date))
-
-                # Create a new Workday document
-                doc_dict = {
-                    "doctype": 'Workday',
-                    "employee": data.employee,
-                    "log_date": get_datetime(date),
-                    "company": company,
-                    "hours_worked": total_hours_worked,
-                    "target_hours": target_hours,
-                    "total_work_seconds": total_hours_worked * 3600,
-                    "total_target_seconds": target_hours * 3600,
-                    "actual_working_hours": total_hours_worked
-                }
-                workday = frappe.get_doc(doc_dict)
-
-                # Set status based on custom logic (e.g., On Leave or Half Day)
-                if workday.status == 'Half Day':
-                    workday.target_hours = workday.target_hours / 2
-                elif workday.status == 'On Leave':
-                    workday.target_hours = 0
-
-                workday = workday.insert()
+            # Create a new Workday document
+            doc_dict = {
+                "doctype": 'Workday',
+                "employee": data.employee,
+                "log_date": get_datetime(date),
+                "company": company,
+                "hours_worked": total_hours_worked,
+                "hours_absent": total_hours_absent,
+                "target_hours": target_hours,
+                "total_work_seconds": total_hours_worked * 3600,
+                "total_target_seconds": target_hours * 3600,
+                "actual_working_hours": total_hours_worked,
+            }
+        
+            workday = frappe.get_doc(doc_dict)
+            workday = workday.insert()
 
         except Exception:
             message = _(f"Something went wrong in Workday Creation: {traceback.format_exc()}")
             frappe.msgprint(message)
             frappe.log_error("bulk_process_workdays() error", message)
 
+def get_absences_for_employee_on_date(employee, date):
+    """Retrieve attendance for an employee on a specific date"""
+    attendance = frappe.get_list(
+        "Attendance",
+        filters={
+            'employee': employee,
+            'attendance_date': date,
+            'status': ['in', ['On Leave', 'Half Day']]
+        },
+        fields=['name', 'status']
+    )
+    return attendance
 
 def get_timesheets_for_employee_on_date(employee, date):
     """Retrieve all timesheets for an employee on a specific date"""

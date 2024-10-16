@@ -17,6 +17,7 @@
   "section_break_9",
   "target_hours",
   "hours_worked",
+  "hours_absent",
   "actual_working_hours",
   "column_break_5",
   "expected_break_hours",
@@ -71,14 +72,12 @@
   {
    "fieldname": "number_of_breaks",
    "fieldtype": "Int",
-   "hidden": 0,
    "label": "Number of Breaks",
    "read_only": 1
   },
   {
    "fieldname": "break_hours",
    "fieldtype": "Float",
-   "hidden": 0,
    "label": "Break Hours",
    "read_only": 1
   },
@@ -163,13 +162,21 @@
    "fieldtype": "Float",
    "label": "Expected Break Hours",
    "read_only": 1
+  },
+  {
+   "fieldname": "hours_absent",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Hours absent",
+   "read_only": 1
   }
  ],
  "links": [],
- "modified": "2024-07-24 16:45:02.502629",
+ "modified": "2024-10-16 18:13:24.436738",
  "modified_by": "Administrator",
  "module": "HR Addon",
  "name": "Workday",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -198,5 +205,6 @@
   }
  ],
  "sort_field": "modified",
- "sort_order": "DESC"
+ "sort_order": "DESC",
+ "states": []
 }

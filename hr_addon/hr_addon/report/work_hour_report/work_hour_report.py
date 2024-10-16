@@ -27,21 +27,22 @@ def execute(filters=None):
 
     # Define columns for the report
     columns = [
-        {'fieldname': 'log_date', 'label': 'Datum', 'width': 110},
+        {'fieldname': 'log_date', 'label': 'Datum', 'width': 150},
         {'fieldname': 'name', 'label': 'Werktag (Link)', "fieldtype": "Link", "options": "Workday", 'width': 150},
-        {'fieldname': 'total_work_seconds', 'label': 'Ist-Stunden', "width": 110},
-        {'fieldname': 'total_target_seconds', 'label': 'Soll-Stunden', 'width': 110},
-        {'fieldname': 'actual_diff_log', 'label': 'Differenz', 'width': 90},
+        {'fieldname': 'total_work_seconds', 'label': 'Ist-Stunden', "width": 150},
+        {'fieldname': 'total_target_seconds', 'label': 'Soll-Stunden', 'width': 150},
+        {'fieldname': 'hours_absent', 'label': 'Abwesend', 'width': 150},
+        {'fieldname': 'actual_diff_log', 'label': 'Differenz', 'width': 150},
     ]
 
     # Fetch data based on conditions
     work_data = frappe.db.sql(
         """
-        SELECT name, log_date, employee, attendance, status, total_work_seconds, total_break_seconds,
+        SELECT name, log_date, employee, attendance, status, total_work_seconds, total_break_seconds, hours_absent 
                actual_working_hours * 60 * 60 actual_working_seconds,
-               expected_break_hours * 60 * 60 expected_break_hours,
+               expected_break_hours * 60 * 60 expected_break_seconds,
                target_hours, total_target_seconds, (total_work_seconds - total_target_seconds) AS diff_log,
-               (actual_working_hours * 60 * 60 - total_target_seconds) AS actual_diff_log,
+               (actual_working_hours * 60 * 60 + hours_absent * 60 * 60 - total_target_seconds) AS actual_diff_log,
                TIME(first_checkin) AS first_in, TIME(last_checkout) AS last_out
         FROM `tabWorkday`
         WHERE docstatus < 2 {0} {1}
