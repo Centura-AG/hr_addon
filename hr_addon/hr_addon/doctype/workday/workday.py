@@ -44,9 +44,13 @@ def bulk_process_workdays(data):
     for date in data.unmarked_days:
         try:
             timesheets = get_timesheets_for_employee_on_date(data.employee, get_datetime(date))
+            
             if timesheets:
-                # Aggregate timesheet data
-                total_hours_worked = sum(ts.get("total_hours", 0) for ts in timesheets)
+
+                # Get total hours worked from Time Logs
+                total_hours_worked = 0
+                for timesheet in timesheets:
+                    total_hours_worked += get_hours_from_timelogs_of_timesheet_on_date(timesheet.name, get_datetime(date))
 
                 # Get target hours from Weekly Working Hours
                 target_hours = get_target_hours(data.employee, get_datetime(date))
@@ -91,6 +95,24 @@ def get_timesheets_for_employee_on_date(employee, date):
         fields=['name', 'total_hours']
     )
     return timesheets
+
+def get_hours_from_timelogs_of_timesheet_on_date(timesheet, date):
+    """Retrieve all timelogs of a timesheet for a specific date."""
+    
+    # SQL query to fetch all timelogs from Timesheet Detail where the date matches
+    timelogs = frappe.db.sql(
+        """
+        SELECT hours
+        FROM `tabTimesheet Detail`
+        WHERE parent = %s
+        AND DATE(from_time) = %s
+        """,
+        (timesheet, date),
+        as_dict=1
+    )
+    
+    # Summing the hours from the retrieved timelogs
+    return sum(tl.get("hours", 0) for tl in timelogs)
 
 
 def get_target_hours(employee, date):
