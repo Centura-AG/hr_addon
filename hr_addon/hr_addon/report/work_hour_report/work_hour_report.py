@@ -27,7 +27,7 @@ def execute(filters=None):
 
     # Define columns for the report
     columns = [
-        {'fieldname': 'log_date', 'label': 'Datum', 'width': 300},
+        {'fieldname': 'log_date', 'label': 'Datum', 'width': 200},
         {'fieldname': 'name', 'label': 'Werktag (Link)', "fieldtype": "Link", "options": "Workday", 'width': 150},
         {'fieldname': 'total_work_seconds', 'label': 'Ist-Stunden', "width": 150},
         {'fieldname': 'absent_seconds', 'label': 'Abwesend', 'width': 150},
